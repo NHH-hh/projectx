@@ -49,9 +49,9 @@ func (k PublicKey) Address() types.Address {
 }
 
 type Signature struct {
-	r, s *big.Int
+	R, S *big.Int
 }
 
 func (s Signature) Verify(pubKey PublicKey, data []byte) bool {
-	return ecdsa.Verify(pubKey.Key, data, s.r, s.s)
+	return ecdsa.Verify(pubKey.Key, data, s.R, s.S)
 }
