@@ -58,11 +58,3 @@ func (tx *Transaction) SetFirstSeen(t int64) {
 func (tx *Transaction) FirstSeen() int64 {
 	return tx.firstSeen
 }
-
-//func (t *Transaction) EncodeBinary(w io.Writer) error {
-//	return nil
-//}
-//
-//func (t *Transaction) DecodeBinary(r io.Reader) error {
-//	return nil
-//}

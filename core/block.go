@@ -101,17 +101,9 @@ func (b *Block) Verify() error {
 	return nil
 }
 
-//func (b *Block) Decode(r io.Reader, dec Decoder[*Block]) error {
-//	return dec.Decode(r, b)
-//}
-
 func (b *Block) Decode(dec Decoder[*Block]) error {
 	return dec.Decode(b)
 }
-
-//func (b *Block) Encode(w io.Writer, enc Encoder[*Block]) error {
-//	return enc.Encode(w, b)
-//}
 
 func (b *Block) Encode(enc Encoder[*Block]) error {
 	return enc.Encode(b)
@@ -123,43 +115,3 @@ func (b *Block) Hash(hasher Hasher[*Header]) types.Hash {
 	}
 	return b.hash
 }
-
-//func (b *Block) HeaderData() []byte {
-//	buf := &bytes.Buffer{}
-//	enc := gob.NewEncoder(buf)
-//	enc.Encode(b.Header)
-//	return buf.Bytes()
-//}
-
-//func (b *Block) Hash() types.Hash {
-//	buf := &bytes.Buffer{}
-//	_ = b.Header.EncodeBinary(buf)
-//	if b.hash.IsZero() {
-//		b.hash = sha256.Sum256(buf.Bytes())
-//	}
-//	return b.hash
-//}
-//
-//func (b *Block) EncodeBinary(w io.Writer) error {
-//	if err := b.Header.EncodeBinary(w); err != nil {
-//		return err
-//	}
-//	for _, tx := range b.Transactions {
-//		if err := tx.EncodeBinary(w); err != nil {
-//			return err
-//		}
-//	}
-//	return nil
-//}
-//
-//func (b *Block) DecodeBinary(r io.Reader) error {
-//	if err := b.Header.DecodeBinary(r); err != nil {
-//		return err
-//	}
-//	for _, tx := range b.Transactions {
-//		if err := tx.DecodeBinary(r); err != nil {
-//			return err
-//		}
-//	}
-//	return nil
-//}
