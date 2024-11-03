@@ -1,0 +1,32 @@
+{
+    "configurations": [
+        {
+            "type": "go",
+            "name": "Go configuration",
+            "goExecPath": "D:\\Environment\\Go\\bin\\go.exe",
+            "buildParams": []
+        },
+        {
+            "name": "go test projectx/core",
+            "type": "go-test",
+            "workingDir": "E:\\work\\go\\projectx\\core",
+            "goExecPath": "D:\\Environment\\Go\\bin\\go.exe",
+            "buildParams": ["projectx/core"]
+        },
+        {
+            "name": "go test projectx/crypto",
+            "type": "go-test",
+            "workingDir": "E:\\work\\go\\projectx\\crypto",
+            "goExecPath": "D:\\Environment\\Go\\bin\\go.exe",
+            "buildParams": ["projectx/crypto"]
+        },
+        {
+            "name": "go build projectx",
+            "type": "go",
+            "workingDir": "E:\\work\\go\\projectx",
+            "goExecPath": "D:\\Environment\\Go\\bin\\go.exe",
+            "buildParams": ["projectx"]
+        }
+
+    ]
+}
