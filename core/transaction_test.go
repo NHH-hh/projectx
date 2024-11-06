@@ -2,7 +2,6 @@ package core
 
 import (
 	"bytes"
-	"fmt"
 	"github.com/stretchr/testify/assert"
 	"projectx/crypto"
 	"testing"
@@ -35,7 +34,6 @@ func TestTxEncodeAndDecode(t *testing.T) {
 	tx := randomTxWithSignature(t)
 	buf := &bytes.Buffer{}
 	assert.Nil(t, tx.Encode(NewGolTxEncoder(buf)))
-	fmt.Printf("%+v\n", buf)
 	txDecode := &Transaction{}
 	assert.Nil(t, txDecode.Decode(NewGobTxDecoder(buf)))
 	assert.Equal(t, tx, txDecode)
