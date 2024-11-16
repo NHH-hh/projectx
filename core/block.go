@@ -2,8 +2,10 @@ package core
 
 import (
 	"bytes"
+	"crypto/sha256"
 	"encoding/gob"
 	"errors"
+	"fmt"
 	"projectx/crypto"
 	"projectx/types"
 )
@@ -98,6 +100,13 @@ func (b *Block) Verify() error {
 			return err
 		}
 	}
+	dataHash, err := CalculateDataHash(b.Transactions)
+	if err != nil {
+		return err
+	}
+	if dataHash != b.DataHash {
+		return fmt.Errorf("block(%s) has invalid data hash", b.Hash(BlockHasher{}))
+	}
 	return nil
 }
 
@@ -114,4 +123,15 @@ func (b *Block) Hash(hasher Hasher[*Header]) types.Hash {
 		b.hash = hasher.Hash(b.Header)
 	}
 	return b.hash
+}
+
+func CalculateDataHash(txx []Transaction) (hash types.Hash, err error) {
+	buf := &bytes.Buffer{}
+	for _, tx := range txx {
+		if err = tx.Encode(NewGolTxEncoder(buf)); err != nil {
+			return
+		}
+	}
+	hash = sha256.Sum256(buf.Bytes())
+	return
 }
