@@ -31,7 +31,10 @@ func main() {
 		ID:         "LOCAL",
 		Transports: []network.Transport{trLocal},
 	}
-	server := network.NewServer(opts)
+	server, err := network.NewServer(opts)
+	if err != nil {
+		logrus.Fatal(err)
+	}
 	server.Start()
 }
 

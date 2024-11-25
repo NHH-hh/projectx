@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"projectx/crypto"
 	"projectx/types"
+	"time"
 )
 
 type Header struct {
@@ -67,11 +68,26 @@ type Block struct {
 	hash types.Hash
 }
 
-func NewBlock(h *Header, txs []Transaction) *Block {
+func NewBlock(h *Header, txs []Transaction) (*Block, error) {
 	return &Block{
 		Header:       h,
 		Transactions: txs,
+	}, nil
+}
+
+func NewBlockFromPreHeader(prevHeader *Header, txx []Transaction) (*Block, error) {
+	dataHash, err := CalculateDataHash(txx)
+	if err != nil {
+		return nil, err
 	}
+	header := &Header{
+		Version:       1,
+		Height:        prevHeader.Height + 1,
+		DataHash:      dataHash,
+		PrevBlockHash: BlockHasher{}.Hash(prevHeader),
+		Timestamp:     time.Now().UnixNano(),
+	}
+	return NewBlock(header, txx)
 }
 
 func (b *Block) AddTransaction(tx *Transaction) {
