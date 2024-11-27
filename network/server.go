@@ -49,7 +49,7 @@ func NewServer(opts ServerOpts) (*Server, error) {
 	s := &Server{
 		ServerOpts:  opts,
 		chain:       chain,
-		memPool:     NewTxPool(),
+		memPool:     NewTxPool(1000),
 		isValidator: opts.PrivateKey != nil,
 		rpcCh:       make(chan RPC),
 		quitCh:      make(chan struct{}, 1),
@@ -114,7 +114,7 @@ func (s *Server) broadcast(payload []byte) error {
 func (s *Server) processTransaction(tx *core.Transaction) error {
 
 	hash := tx.Hash(core.TxHasher{})
-	if s.memPool.Has(hash) {
+	if s.memPool.Contains(hash) {
 		return nil
 	}
 	if err := tx.Verify(); err != nil {
@@ -122,9 +122,10 @@ func (s *Server) processTransaction(tx *core.Transaction) error {
 	}
 	tx.SetFirstSeen(time.Now().UnixNano())
 	_ = s.Logger.Log("msg", "adding new tx to memPool",
-		"hash", hash, "memPoolLength", s.memPool.Len())
+		"hash", hash, "memPoolLength", s.memPool.PendingCount())
 	go s.broadcastTx(tx)
-	return s.memPool.Add(tx)
+	s.memPool.Add(tx)
+	return nil
 }
 
 func (s *Server) broadcastBlock(b *core.Block) error {
@@ -159,7 +160,7 @@ func (s *Server) createNewBlock() error {
 	// Later on when we know thr internal structure of our transaction
 	// we will implement same kind of complexity function to determine how
 	// many transactions can be included in a block.
-	txx := s.memPool.Transactions()
+	txx := s.memPool.Pending()
 	block, err := core.NewBlockFromPreHeader(currentHeader, txx)
 	if err != nil {
 		return err
@@ -170,7 +171,7 @@ func (s *Server) createNewBlock() error {
 	if err := s.chain.AddBlock(block); err != nil {
 		return err
 	}
-	s.memPool.Flush()
+	s.memPool.ClearPending()
 	return nil
 }
 
