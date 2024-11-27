@@ -2,21 +2,23 @@ package core
 
 import (
 	"fmt"
-	"github.com/sirupsen/logrus"
+	"github.com/go-kit/log"
 	"sync"
 )
 
 type Blockchain struct {
+	logger    log.Logger
 	store     Storage
 	lock      sync.RWMutex
 	headers   []*Header
 	validator Validator
 }
 
-func NewBlockchain(genesis *Block) (*Blockchain, error) {
+func NewBlockchain(l log.Logger, genesis *Block) (*Blockchain, error) {
 	bc := &Blockchain{
 		headers: []*Header{},
 		store:   NewMemoryStorage(),
+		logger:  l,
 	}
 	bc.validator = NewBlockValidator(bc)
 	err := bc.addBlockWithoutValidator(genesis)
@@ -57,9 +59,10 @@ func (bc *Blockchain) addBlockWithoutValidator(b *Block) error {
 	bc.lock.Lock()
 	bc.headers = append(bc.headers, b.Header)
 	bc.lock.Unlock()
-	logrus.WithFields(logrus.Fields{
-		"height": b.Height,
-		"hash":   b.Hash(BlockHasher{}),
-	}).Info("adding new block")
+	_ = bc.logger.Log(
+		"msg", "new block",
+		"hash", b.Hash(BlockHasher{}),
+		"height", b.Height,
+		"transactions", len(b.Transactions))
 	return bc.store.Put(b)
 }

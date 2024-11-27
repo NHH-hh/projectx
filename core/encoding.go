@@ -32,7 +32,7 @@ func (e *GobTxEncoder) Encode(tx *Transaction) error {
 	if err != nil {
 		return err
 	}
-	x := &Serializable{
+	x := &TxSerializable{
 		Data:      tx.Data,
 		FromBytes: pubKeyBytes,
 		Signature: tx.Signature,
@@ -52,7 +52,7 @@ func NewGobTxDecoder(r io.Reader) *GobTxDecoder {
 }
 
 func (d *GobTxDecoder) Decode(tx *Transaction) error {
-	x := &Serializable{}
+	x := &TxSerializable{}
 	err := gob.NewDecoder(d.r).Decode(x)
 	if err != nil {
 		return err
@@ -72,12 +72,10 @@ func (d *GobTxDecoder) Decode(tx *Transaction) error {
 	return nil
 }
 
-type Serializable struct {
-	Data []byte
-
+type TxSerializable struct {
+	Data      []byte
 	FromBytes []byte
 	Signature *crypto.Signature
-
 	// cached version of the tx data hash
 	hash types.Hash
 	// firstSeen is timestamp of when this tx is first seen locally
